@@ -11,6 +11,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+  // fetching blogs if user logged in
   useEffect(() => {
     if (user) {
       blogService.getAll().then(blogs =>
@@ -18,6 +19,16 @@ const App = () => {
       ) 
     } 
   }, [user])
+
+  // fetching user from lcoal storage
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.getAll().then(blogs => setBlogs(blogs))
+    }
+  }, [])
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -27,6 +38,9 @@ const App = () => {
         username, password,
       })
       setUser(user)
+
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -35,6 +49,12 @@ const App = () => {
         setErrorMessage(null)
       }, 5000)
     }
+  }
+
+  const handleLogout = () => {
+    setUser(null)
+    
+    window.localStorage.removeItem('loggedBlogappUser')
   }
 
   const loginForm = () => (
@@ -82,27 +102,10 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <p>{user.name} logged in</p>
+      <p>{user.name} logged in <button onClick={handleLogout}>logout</button> </p> 
       {blogList()}
     </div>
   )
 }
-
-  /*return (
-    <div>
-      <h1>Blog App</h1>
-      <Notification message={errorMessage} />
-
-      {!user && loginForm()}
-      {user &&
-        <div>
-          <p>{user.name} logged in</p>
-          {blogList()}
-      </div>
-    }    
-    </div>
-  )
-}
-*/
 
 export default App
