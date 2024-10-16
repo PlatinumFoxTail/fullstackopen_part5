@@ -3,10 +3,13 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [errorMessage, setErrorMessage] = useState(null)
+
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notificationType, setNotificationType] = useState(null)
   
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -51,9 +54,11 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('wrong credentials')
+      setNotificationMessage('wrong credentials')
+      setNotificationType('error')
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotificationMessage(null)
+        setNotificationType(null)
       }, 5000)
     }
   }
@@ -108,16 +113,32 @@ const App = () => {
   
       const returnedBlog = await blogService.create(newBlog)
       setBlogs(blogs.concat(returnedBlog)) //adding new blog
-  
+
+      //success message
+      setNotificationMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`)
+      setNotificationType('success')
+
       //clearing form field
       setNewTitle('')
       setNewAuthor('')
       setNewUrl('')
 
+      //remove notification after 5s
+      setTimeout(() => {
+        setNotificationMessage(null)
+        setNotificationType(null)
+      }, 5000)
+
     } catch (error) {
       console.error(error)
-      setErrorMessage('creating blog did not succeed!')
-      setTimeout(() => setErrorMessage(null), 5000)
+      setNotificationMessage('creating blog did not succeed!')
+      setTimeout(() => setNotificationMessage(null), 5000)
+      setNotificationType('error')
+
+      setTimeout(() => {
+        setNotificationMessage(null)
+        setNotificationType(null)
+      }, 5000)
     }
   }
 
@@ -125,7 +146,7 @@ const App = () => {
     return (
       <div>
         <h1>Log in to application</h1>
-        <Notification message={errorMessage} />
+        <Notification message={notificationMessage} type={notificationType} />
         {loginForm()}
       </div>
     )
@@ -134,13 +155,16 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+
+      <Notification message={notificationMessage} type={notificationType} />
+
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button> </p> 
       <h2>create new</h2>
       <form onSubmit={handleCreateBlog}>
         <div>
           title:
           <input
-            type="add title"
+            type="text"
             value={newTitle}
             onChange={({ target }) => setNewTitle(target.value)}
           />
@@ -148,7 +172,7 @@ const App = () => {
         <div>
           author:
           <input
-            type="add author"
+            type="text"
             value={newAuthor}
             onChange={({ target }) => setNewAuthor(target.value)}
           />
@@ -156,7 +180,7 @@ const App = () => {
         <div>
           url:
           <input
-            type="add webpage"
+            type="text"
             value={newUrl}
             onChange={({ target }) => setNewUrl(target.value)}
           />
