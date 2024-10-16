@@ -98,7 +98,7 @@ const App = () => {
       {blogs
         .sort((blog1, blog2) => blog2.likes - blog1.likes)
         .map(blog => (
-        <Blog key={blog.id} blog={blog} handleLike={handleLike} />
+          <Blog key={blog.id} blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />
         ))
       }
     </div>
@@ -166,6 +166,35 @@ const App = () => {
       }, 5000)
     }
   }
+
+  const handleDelete = async (blog) => {
+    const confirmDelete = window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)
+    if (!confirmDelete) return
+
+    console.log('Attempting to delete blog:', blog)
+  
+    try {
+      await blogService.remove(blog.id)
+      setBlogs(blogs.filter(blogdelete => blogdelete.id !== blog.id))
+  
+      setNotificationMessage(`The '${blog.title}' by ${blog.author} removed`)
+      setNotificationType('success')
+  
+      setTimeout(() => {
+        setNotificationMessage(null)
+        setNotificationType(null)
+      }, 5000)
+    } catch (error) {
+      setNotificationMessage('Deleting blog failed!')
+      setNotificationType('error')
+  
+      setTimeout(() => {
+        setNotificationMessage(null)
+        setNotificationType(null)
+      }, 5000)
+    }
+  }
+  
 
   if (user === null) {
     return (
