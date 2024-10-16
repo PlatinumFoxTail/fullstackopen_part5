@@ -7,9 +7,14 @@ import Notification from './components/Notification'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
+  
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+
+  const [newTitle, setNewTitle] = useState('')
+  const [newAuthor, setNewAuthor] = useState('')
+  const [newUrl, setNewUrl] = useState('')
 
   // fetching blogs if user logged in
   useEffect(() => {
@@ -40,6 +45,8 @@ const App = () => {
       setUser(user)
 
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+
+      blogService.setToken(user.token)
 
       setUsername('')
       setPassword('')
@@ -89,6 +96,31 @@ const App = () => {
     </div>
   )
 
+  const handleCreateBlog = async (event) => {
+    event.preventDefault()
+    
+    try {
+      const newBlog = {
+        title: newTitle,
+        author: newAuthor,
+        url: newUrl,
+      }
+  
+      const returnedBlog = await blogService.create(newBlog)
+      setBlogs(blogs.concat(returnedBlog)) //adding new blog
+  
+      //clearing form field
+      setNewTitle('')
+      setNewAuthor('')
+      setNewUrl('')
+
+    } catch (error) {
+      console.error(error)
+      setErrorMessage('creating blog did not succeed!')
+      setTimeout(() => setErrorMessage(null), 5000)
+    }
+  }
+
   if (user === null) {
     return (
       <div>
@@ -103,6 +135,34 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button> </p> 
+      <h2>create new</h2>
+      <form onSubmit={handleCreateBlog}>
+        <div>
+          title:
+          <input
+            type="add title"
+            value={newTitle}
+            onChange={({ target }) => setNewTitle(target.value)}
+          />
+        </div>
+        <div>
+          author:
+          <input
+            type="add author"
+            value={newAuthor}
+            onChange={({ target }) => setNewAuthor(target.value)}
+          />
+        </div>
+        <div>
+          url:
+          <input
+            type="add webpage"
+            value={newUrl}
+            onChange={({ target }) => setNewUrl(target.value)}
+          />
+        </div>
+        <button type="submit">create</button>
+      </form>
       {blogList()}
     </div>
   )
