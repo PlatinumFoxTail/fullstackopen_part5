@@ -96,7 +96,7 @@ const App = () => {
   const blogList = () => (
     <div>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} handleLike={handleLike} />
       )}
     </div>
   )
@@ -126,6 +126,37 @@ const App = () => {
       setTimeout(() => setNotificationMessage(null), 5000)
       setNotificationType('error')
 
+      setTimeout(() => {
+        setNotificationMessage(null)
+        setNotificationType(null)
+      }, 5000)
+    }
+  }
+
+  const handleLike = async (blog) => {
+    const updatedBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+      user: blog.user.id, 
+    }
+
+    console.log('Updated Blog:', updatedBlog)
+  
+    try {
+      const returnedBlog = await blogService.update(blog.id, updatedBlog)
+      setBlogs(blogs.map(blogliked => (blogliked.id !== blog.id ? blogliked : returnedBlog)))
+  
+      setNotificationMessage(`One like added to '${blog.title}' by ${blog.author}`)
+      setNotificationType('success')
+  
+      setTimeout(() => {
+        setNotificationMessage(null)
+        setNotificationType(null)
+      }, 5000)
+    } catch (error) {
+      setNotificationMessage('Adding like to blog failed!')
+      setNotificationType('error')
+  
       setTimeout(() => {
         setNotificationMessage(null)
         setNotificationType(null)
