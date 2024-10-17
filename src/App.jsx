@@ -12,7 +12,7 @@ const App = () => {
 
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [notificationType, setNotificationType] = useState(null)
-  
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -24,8 +24,8 @@ const App = () => {
     if (user) {
       blogService.getAll().then(blogs =>
         setBlogs( blogs )
-      ) 
-    } 
+      )
+    }
   }, [user])
 
   // fetching user from lcoal storage
@@ -65,7 +65,7 @@ const App = () => {
 
   const handleLogout = () => {
     setUser(null)
-    
+
     window.localStorage.removeItem('loggedBlogappUser')
   }
 
@@ -73,7 +73,7 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-          <input
+        <input
           type="text"
           value={username}
           name="Username"
@@ -82,7 +82,7 @@ const App = () => {
       </div>
       <div>
         password
-          <input
+        <input
           type="password"
           value={password}
           name="Password"
@@ -90,7 +90,7 @@ const App = () => {
         />
       </div>
       <button type="submit">login</button>
-    </form>      
+    </form>
   )
 
   const blogList = () => (
@@ -107,7 +107,7 @@ const App = () => {
   const handleCreateBlog = async (newBlog) => {
     try {
       const returnedBlog = await blogService.create(newBlog)
-      console.log("Blog created:", returnedBlog)
+      console.log('Blog created:', returnedBlog)
       setBlogs(blogs.concat(returnedBlog)) //adding new blog
 
       //success message
@@ -140,18 +140,18 @@ const App = () => {
     const updatedBlog = {
       ...blog,
       likes: blog.likes + 1,
-      user: blog.user.id, 
+      user: blog.user.id,
     }
 
     console.log('Updated Blog:', updatedBlog)
-  
+
     try {
       const returnedBlog = await blogService.update(blog.id, updatedBlog)
       setBlogs(blogs.map(blogliked => (blogliked.id !== blog.id ? blogliked : returnedBlog)))
-  
+
       setNotificationMessage(`One like added to '${blog.title}' by ${blog.author}`)
       setNotificationType('success')
-  
+
       setTimeout(() => {
         setNotificationMessage(null)
         setNotificationType(null)
@@ -159,7 +159,7 @@ const App = () => {
     } catch (error) {
       setNotificationMessage('Adding like to blog failed!')
       setNotificationType('error')
-  
+
       setTimeout(() => {
         setNotificationMessage(null)
         setNotificationType(null)
@@ -172,14 +172,14 @@ const App = () => {
     if (!confirmDelete) return
 
     console.log('Attempting to delete blog:', blog)
-  
+
     try {
       await blogService.remove(blog.id)
       setBlogs(blogs.filter(blogdelete => blogdelete.id !== blog.id))
-  
+
       setNotificationMessage(`The '${blog.title}' by ${blog.author} removed`)
       setNotificationType('success')
-  
+
       setTimeout(() => {
         setNotificationMessage(null)
         setNotificationType(null)
@@ -187,14 +187,13 @@ const App = () => {
     } catch (error) {
       setNotificationMessage('Deleting blog failed!')
       setNotificationType('error')
-  
+
       setTimeout(() => {
         setNotificationMessage(null)
         setNotificationType(null)
       }, 5000)
     }
   }
-  
 
   if (user === null) {
     return (
@@ -212,7 +211,7 @@ const App = () => {
 
       <Notification message={notificationMessage} type={notificationType} />
 
-      <p>{user.name} logged in <button onClick={handleLogout}>logout</button> </p> 
+      <p>{user.name} logged in <button onClick={handleLogout}>logout</button> </p>
       <Togglable buttonLabel="new blog" ref={blogFormRef}>
         <BlogForm handleCreateBlog={handleCreateBlog} />
       </Togglable>
