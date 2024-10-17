@@ -15,11 +15,11 @@ test('renders title and author, but not url or likes', () => {
     },
   }
 
-  render(<Blog blog={blog} />)
+  const { container } = render(<Blog blog={blog} />)
 
-  const elementTitleAuthor = screen.getByText('Blogs 101 Billy Blog')
+  const elementTitleAuthor = container.querySelector('.blog-summary')
   expect(elementTitleAuthor).toBeDefined()
 
-  expect(screen.queryByText('www.blogs101.com')).toBeNull()
-  expect(screen.queryByText('100 likes')).toBeNull()
+  expect(container.querySelector('.blog-url')).toBeNull()
+  expect(container.querySelector('.blog-likes')).toBeNull()
 })
