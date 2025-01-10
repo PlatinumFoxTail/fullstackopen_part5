@@ -2,7 +2,7 @@
 
 This is a hand in assignment for the Full Stack Open course at University of Helsinki.
 
-Assignment based on template, that provided a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Hand in assignment based on template, that provided a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Related to the template, two official plugins are available:
 
